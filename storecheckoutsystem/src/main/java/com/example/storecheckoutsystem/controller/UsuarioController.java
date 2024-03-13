@@ -57,10 +57,9 @@ public class UsuarioController {
   @PostMapping("/login")
   public ResponseEntity<?> usuarioLogin(@Validated @RequestBody Usuario login) {
     logger.info("Received login request for user: {}", login.getNome_usuario());
-    Optional<Usuario> usuariolog = usuarioRepository.findByNomeUsuario(login.getNome_usuario());
-    logger.info("Found user in database: {}", usuariolog);
-
     Optional<Usuario> usuario = usuarioRepository.findByNomeUsuario(login.getNome_usuario());
+    logger.info("Found user in database: {}", usuario); // Corrected variable name
+
     if (usuario.isPresent()) {
       if (login.getSenha_usuario().equals(usuario.get().getSenha_usuario())) {
         return ResponseEntity.ok().body("Login feito com sucesso");
