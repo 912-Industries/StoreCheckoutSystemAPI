@@ -40,6 +40,17 @@ public class ProdutoController {
     return new ResponseEntity<>(produtos, HttpStatus.OK);
   }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<Produto> buscarProdutoPorId(@PathVariable Integer id) {
+    Produto produto = produtoRepository.findById(id).orElseThrow();
+    Produto produtoDTO = new Produto();
+    produtoDTO.setIdProduto(produto.getIdProduto());
+    produtoDTO.setNomeProduto(produto.getNomeProduto());
+    produtoDTO.setPrecoFinalProduto(produto.getPrecoFinalProduto());
+    return ResponseEntity.ok(produtoDTO);
+  }
+
+
   @PostMapping("/cadastro")
   public Produto cadastroProduto(@Validated @RequestBody Produto produto) {
 
