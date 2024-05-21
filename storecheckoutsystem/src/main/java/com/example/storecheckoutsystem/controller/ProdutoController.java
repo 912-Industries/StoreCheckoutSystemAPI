@@ -3,6 +3,9 @@ package com.example.storecheckoutsystem.controller;
 import com.example.storecheckoutsystem.model.Markup;
 import com.example.storecheckoutsystem.model.Produto;
 import com.example.storecheckoutsystem.repository.ProdutoRepository;
+
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -118,5 +121,25 @@ public class ProdutoController {
     produtoAtual.setPrecoFinalProduto(calculatedPrice);
     Produto atualizarProduto = produtoRepository.save(produtoAtual);
     return ResponseEntity.ok(atualizarProduto);
+  }
+
+  @PostMapping("/finalizar-compra")
+  public ResponseEntity<Void> removerProdutos(@RequestBody List<Map<String, Object>> produtos) {
+    for (Map<String, Object> produto : produtos) {
+      Integer idProduto = (Integer) produto.get("id_produto");
+      Integer quantidade = (Integer) produto.get("quantidade");
+
+      Produto produtoEntity = produtoRepository.findById(idProduto).orElseThrow();
+
+      int novaQuantidade = produtoEntity.getQuantidadeProduto() - quantidade;
+      if (novaQuantidade <= 0) {
+        novaQuantidade = 0;
+      }
+
+      produtoEntity.setQuantidadeProduto(novaQuantidade);
+      produtoRepository.save(produtoEntity);
+    }
+
+    return ResponseEntity.ok().build();
   }
 }
