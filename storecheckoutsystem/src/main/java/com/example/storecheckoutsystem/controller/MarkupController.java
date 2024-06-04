@@ -15,31 +15,26 @@ import com.example.storecheckoutsystem.repository.MarkupRepository;
 @RestController
 @RequestMapping("/api/markup")
 public class MarkupController {
-    Markup markup = new Markup();
-    @Autowired
-    private MarkupRepository markupRepository;
 
-    @GetMapping
     public ResponseEntity<Iterable<Markup>> pesquisaMarkup() {
-        Iterable<Markup> markups = markupRepository.findAll();
+        Iterable<Markup> markups = markupService.getAllMarkups();
         return new ResponseEntity<>(markups, HttpStatus.OK);
     }
 
     @PostMapping("/cadastro")
-    public Markup cadastroMarkup(@Validated @RequestBody Markup markup) {
-        markup.setDespesaFixa(markup.getDespesaFixa());
-        markup.setDespesaVariavel(markup.getDespesaVariavel());
-        markup.setMargemLucro(markup.getMargemLucro());
-        markup.setResultadoMarkup(markup.getResultadoMarkup());
-        return markupRepository.save(markup);
+    public ResponseEntity<Markup> cadastroMarkup(@Validated @RequestBody Markup markup) {
+        Markup newMarkup = markupService.cadastrarNovoMarkup(markup);
+        return new ResponseEntity<>(newMarkup, HttpStatus.CREATED);
     }
 
-    
-    public Markup getLastMarkup() {
-        return markupRepository.findTopByOrderByIdMarkupDesc();
+    public ResponseEntity<Markup> getLastMarkup() {
+        Markup lastMarkup = markupService.getLastMarkup();
+        return new ResponseEntity<>(lastMarkup, HttpStatus.OK);
     }
     
-    public double calculateProductPrice(double productPrice, Markup markup) {
-        return productPrice * markup.getResultadoMarkup();
+    public ResponseEntity<Double> calculateProductPrice(double productPrice) {
+        Markup lastMarkup = markupService.getLastMarkup();
+        double totalPrice = markupService.calculateProductPrice(productPrice, lastMarkup);
+        return new ResponseEntity<>(totalPrice, HttpStatus.OK);
     }
 }
