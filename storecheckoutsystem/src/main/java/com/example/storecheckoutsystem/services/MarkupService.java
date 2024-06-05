@@ -1,5 +1,11 @@
 package com.example.storecheckoutsystem.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.storecheckoutsystem.model.Markup;
+import com.example.storecheckoutsystem.repository.MarkupRepository;
+
 @Service
 public class MarkupService {
 

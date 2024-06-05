@@ -1,3 +1,5 @@
+package com.example.storecheckoutsystem.services;
+
 import com.example.storecheckoutsystem.model.Usuario;
 import com.example.storecheckoutsystem.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,8 @@ public class UsuarioService {
 
     public Usuario cadastroUsuario(Usuario usuario) {
         usuario.setNomeUsuario(usuario.getNome_usuario());
-        usuario.setEmailUsuario(usuario.getEmail_usuario());
-        usuario.setSenhaUsuario(usuario.getSenha_usuario());
+        usuario.setEmail_usuario(usuario.getEmail_usuario());
+        usuario.setSenha_usuario(usuario.getSenha_usuario());
         return usuarioRepository.save(usuario);
     }
 

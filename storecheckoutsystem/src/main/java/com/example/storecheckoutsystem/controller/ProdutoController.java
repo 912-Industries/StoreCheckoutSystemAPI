@@ -1,4 +1,8 @@
+package com.example.storecheckoutsystem.controller;
+
 import com.example.storecheckoutsystem.model.Produto;
+import com.example.storecheckoutsystem.services.ProdutoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

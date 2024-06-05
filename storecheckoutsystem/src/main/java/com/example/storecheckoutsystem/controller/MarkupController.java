@@ -1,20 +1,23 @@
 package com.example.storecheckoutsystem.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.storecheckoutsystem.services.MarkupService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.storecheckoutsystem.model.Markup;
-import com.example.storecheckoutsystem.repository.MarkupRepository;
 
 @RestController
 @RequestMapping("/api/markup")
 public class MarkupController {
+    private final MarkupService markupService;
+
+    public MarkupController(MarkupService markupService) {
+        this.markupService = markupService;
+    }
 
     public ResponseEntity<Iterable<Markup>> pesquisaMarkup() {
         Iterable<Markup> markups = markupService.getAllMarkups();
@@ -31,8 +34,8 @@ public class MarkupController {
         Markup lastMarkup = markupService.getLastMarkup();
         return new ResponseEntity<>(lastMarkup, HttpStatus.OK);
     }
-    
-    public ResponseEntity<Double> calculateProductPrice(double productPrice) {
+
+    public ResponseEntity<Double> calculateProductPrice(double productPrice, ResponseEntity<Markup> lastMarkup2) {
         Markup lastMarkup = markupService.getLastMarkup();
         double totalPrice = markupService.calculateProductPrice(productPrice, lastMarkup);
         return new ResponseEntity<>(totalPrice, HttpStatus.OK);

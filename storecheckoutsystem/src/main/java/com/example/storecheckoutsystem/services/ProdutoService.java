@@ -1,3 +1,5 @@
+package com.example.storecheckoutsystem.services;
+
 import com.example.storecheckoutsystem.model.Markup;
 import com.example.storecheckoutsystem.model.Produto;
 import com.example.storecheckoutsystem.repository.ProdutoRepository;
@@ -12,12 +14,12 @@ import java.util.Optional;
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
-    private final MarkupController markupController;
+    private final MarkupService markupService;
 
     @Autowired
-    public ProdutoService(ProdutoRepository produtoRepository, MarkupController markupController) {
+    public ProdutoService(ProdutoRepository produtoRepository, MarkupService markupService) {
         this.produtoRepository = produtoRepository;
-        this.markupController = markupController;
+        this.markupService = markupService;
     }
 
     public Iterable<Produto> pesquisaProdutos() {
@@ -34,9 +36,9 @@ public class ProdutoService {
     }
 
     public Produto cadastroProduto(Produto produto) {
-        Markup lastMarkup = markupController.getLastMarkup();
+        Markup lastMarkup = markupService.getLastMarkup();
         float productPrice = produto.getPrecoCustoProduto();
-        float calculatedPrice = (float) markupController.calculateProductPrice(productPrice, lastMarkup);
+        float calculatedPrice = (float) markupService.calculateProductPrice(productPrice, lastMarkup);
         produto.setPrecoFinalProduto(calculatedPrice);
         return produtoRepository.save(produto);
     }
@@ -50,9 +52,9 @@ public class ProdutoService {
         Produto produtoAtual = optionalProduto.get();
         produtoAtual.setPrecoCustoProduto(produto.getPrecoCustoProduto());
         produtoAtual.setQuantidadeProduto(produto.getQuantidadeProduto());
-        Markup lastMarkup = markupController.getLastMarkup();
+        Markup lastMarkup = markupService.getLastMarkup();
         float productPrice = produto.getPrecoCustoProduto();
-        float calculatedPrice = (float) markupController.calculateProductPrice(productPrice, lastMarkup);
+        float calculatedPrice = (float) markupService.calculateProductPrice(productPrice, lastMarkup);
         produtoAtual.setPrecoFinalProduto(calculatedPrice);
         return produtoRepository.save(produtoAtual);
     }
@@ -80,9 +82,9 @@ public class ProdutoService {
         Produto produtoAtual = optionalProduto.get();
         produtoAtual.setPrecoCustoProduto(produto.getPrecoCustoProduto());
         produtoAtual.setQuantidadeProduto(produtoAtual.getQuantidadeProduto() + produto.getQuantidadeProduto());
-        Markup lastMarkup = markupController.getLastMarkup();
+        Markup lastMarkup = markupService.getLastMarkup();
         float productPrice = produto.getPrecoCustoProduto();
-        float calculatedPrice = (float) markupController.calculateProductPrice(productPrice, lastMarkup);
+        float calculatedPrice = (float) markupService.calculateProductPrice(productPrice, lastMarkup);
         produtoAtual.setPrecoFinalProduto(calculatedPrice);
         return produtoRepository.save(produtoAtual);
     }
