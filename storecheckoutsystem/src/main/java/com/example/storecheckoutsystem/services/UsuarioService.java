@@ -49,4 +49,7 @@ public class UsuarioService {
             return "Usuário não encontrado";
         }
     }
+    public void excluirProduto(int id) {
+        usuarioRepository.deleteById(id);
+    }
 }
