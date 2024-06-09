@@ -41,6 +41,12 @@ public class UsuarioController {
         }
     }
 
+    @PutMapping("editar/{id}")
+    public ResponseEntity<Usuario> editarUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
+        Usuario usuarioAtualizado = usuarioService.editarUsuario(id, usuario);
+        return ResponseEntity.ok(usuarioAtualizado);
+    }
+
     @DeleteMapping("/excluir/{id}")
     public ResponseEntity<Void> excluirProduto(@PathVariable int id) {
         usuarioService.excluirProduto(id);

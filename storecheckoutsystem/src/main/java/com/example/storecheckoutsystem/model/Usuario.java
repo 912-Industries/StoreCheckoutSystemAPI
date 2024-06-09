@@ -30,6 +30,11 @@ public class Usuario {
   @JsonProperty("senha_usuario")
   private String senha_usuario;
 
+  @Column(name = "nivel_permissao_usuario")
+  @JsonProperty("nivel_permissao_usuario")
+
+  private Integer nivel_permissao_usuario;
+
   public int getId_usuario() {
     return id_usuario;
   }
@@ -58,4 +63,11 @@ public class Usuario {
     this.senha_usuario = senha_usuario;
   }
 
+  public Integer getNivel_permissao_usuario() {
+    return nivel_permissao_usuario;
+  }
+
+  public void setNivel_permissao_usuario(Integer nivel_permissao_usuario) {
+    this.nivel_permissao_usuario = nivel_permissao_usuario;
+  }
 }
