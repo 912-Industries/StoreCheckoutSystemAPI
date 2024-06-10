@@ -62,6 +62,10 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<String> usuarioLogin(@Validated @RequestBody Usuario login) {
         String mensagem = usuarioService.usuarioLogin(login);
-        return new ResponseEntity<>(mensagem, HttpStatus.OK);
+        if (mensagem.equals("Login feito com sucesso")) {
+            return new ResponseEntity<>(mensagem, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(mensagem, HttpStatus.UNAUTHORIZED);
+        }
     }
 }

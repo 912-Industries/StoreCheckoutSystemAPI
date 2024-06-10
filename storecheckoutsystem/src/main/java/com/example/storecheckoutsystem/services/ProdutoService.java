@@ -1,8 +1,11 @@
 package com.example.storecheckoutsystem.services;
 
+import com.example.storecheckoutsystem.model.CategoriaProduto;
 import com.example.storecheckoutsystem.model.Markup;
+import com.example.storecheckoutsystem.model.PrecoProduto;
 import com.example.storecheckoutsystem.model.Produto;
 import com.example.storecheckoutsystem.repository.ProdutoRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,20 +30,50 @@ public class ProdutoService {
     }
 
     public Produto buscarProdutoPorId(Integer id) {
-        Produto produto = produtoRepository.findById(id).orElseThrow();
-        Produto produtoDTO = new Produto();
-        produtoDTO.setIdProduto(produto.getIdProduto());
-        produtoDTO.setNomeProduto(produto.getNomeProduto());
-        produtoDTO.setPrecoFinalProduto(produto.getPrecoFinalProduto());
-        return produtoDTO;
+        Optional<Produto> produtoOptional = produtoRepository.findById(id);
+        if (produtoOptional.isPresent()) {
+            Produto produto = produtoOptional.get();
+            Produto produtoModel = new Produto();
+            BeanUtils.copyProperties(produto, produtoModel);
+
+            // Acessar a categoria do produto
+            CategoriaProduto categoriaProduto = produto.getCategoriaProduto();
+            produtoModel.setCategoriaProduto(categoriaProduto);
+
+            // Acessar o preço do produto
+            PrecoProduto precoProduto = produto.getPrecoProduto();
+            PrecoProduto precoProdutoModel = new PrecoProduto();
+            BeanUtils.copyProperties(precoProduto, precoProdutoModel);
+            produtoModel.setPrecoProduto(precoProdutoModel);
+
+            return produtoModel;
+        } else {
+            throw new IllegalArgumentException("Produto não encontrado");
+        }
     }
 
     public Produto cadastroProduto(Produto produto) {
         Markup lastMarkup = markupService.getLastMarkup();
-        float productPrice = produto.getPrecoCustoProduto();
-        float calculatedPrice = (float) markupService.calculateProductPrice(productPrice, lastMarkup);
-        produto.setPrecoFinalProduto(calculatedPrice);
-        return produtoRepository.save(produto);
+        PrecoProduto precoProduto = produto.getPrecoProduto();
+        if (precoProduto.getPrecoCustoProduto()!= null) {
+            float calculatedPrice = (float) markupService.calculateProductPrice(precoProduto.getPrecoCustoProduto(), lastMarkup);
+            precoProduto.setPrecoFinalProduto((double) calculatedPrice);
+        } else {
+            // handle the case where precoCustoProduto is null
+            precoProduto.setPrecoFinalProduto(0.0); // or some other default value
+        }
+
+        Produto produtoModel = new Produto();
+        BeanUtils.copyProperties(produto, produtoModel);
+
+        CategoriaProduto categoriaProduto = produto.getCategoriaProduto();
+        produtoModel.setCategoriaProduto(categoriaProduto);
+
+        PrecoProduto precoProdutoModel = new PrecoProduto();
+        BeanUtils.copyProperties(precoProduto, precoProdutoModel);
+        produtoModel.setPrecoProduto(precoProdutoModel);
+
+        return produtoRepository.save(produtoModel);
     }
 
     public Produto editarProduto(int id, Produto produto) {
@@ -50,16 +83,34 @@ public class ProdutoService {
         }
 
         Produto produtoAtual = optionalProduto.get();
-        produtoAtual.setPrecoCustoProduto(produto.getPrecoCustoProduto());
-        produtoAtual.setQuantidadeProduto(produto.getQuantidadeProduto());
+        Produto produtoModel = new Produto();
+        PrecoProduto precoProduto = produto.getPrecoProduto();
+        BeanUtils.copyProperties(produtoAtual, produtoModel);
+
+        // Atualizar campos do produto
+        produtoModel.setQuantidadeProduto(produto.getQuantidadeProduto());
+
+        // Atualizar preço final do produto
+        Double precoCustoProduto = precoProduto.getPrecoCustoProduto();
         Markup lastMarkup = markupService.getLastMarkup();
-        float productPrice = produto.getPrecoCustoProduto();
-        float calculatedPrice = (float) markupService.calculateProductPrice(productPrice, lastMarkup);
-        produtoAtual.setPrecoFinalProduto(calculatedPrice);
-        return produtoRepository.save(produtoAtual);
+        float calculatedPrice = (float) markupService.calculateProductPrice(precoCustoProduto, lastMarkup);
+        precoProduto.setPrecoFinalProduto((double) calculatedPrice);
+
+        // Atualizar categoria do produto
+        CategoriaProduto categoriaProduto = produtoAtual.getCategoriaProduto();
+        produtoModel.setCategoriaProduto(categoriaProduto);
+
+        // Atualizar preço do produto
+        precoProduto = produtoAtual.getPrecoProduto();
+        PrecoProduto precoProdutoModel = new PrecoProduto();
+        BeanUtils.copyProperties(precoProduto, precoProdutoModel);
+        produtoModel.setPrecoProduto(precoProdutoModel);
+
+        return produtoRepository.save(produtoModel);
     }
 
     public void excluirProduto(int id) {
+        Produto produto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
         produtoRepository.deleteById(id);
     }
 
@@ -80,13 +131,28 @@ public class ProdutoService {
         }
 
         Produto produtoAtual = optionalProduto.get();
-        produtoAtual.setPrecoCustoProduto(produto.getPrecoCustoProduto());
-        produtoAtual.setQuantidadeProduto(produtoAtual.getQuantidadeProduto() + produto.getQuantidadeProduto());
+        Produto produtoModel = new Produto();
+        PrecoProduto precoProduto = produtoAtual.getPrecoProduto();
+        PrecoProduto precoProdutoModel = new PrecoProduto();
+        BeanUtils.copyProperties(produtoAtual, produtoModel);
+
+        precoProduto.setPrecoCustoProduto(precoProduto.getPrecoCustoProduto());
+        produtoModel.setQuantidadeProduto(produtoAtual.getQuantidadeProduto() + produto.getQuantidadeProduto());
+
         Markup lastMarkup = markupService.getLastMarkup();
-        float productPrice = produto.getPrecoCustoProduto();
+        Double productPrice = precoProduto.getPrecoCustoProduto();
         float calculatedPrice = (float) markupService.calculateProductPrice(productPrice, lastMarkup);
-        produtoAtual.setPrecoFinalProduto(calculatedPrice);
-        return produtoRepository.save(produtoAtual);
+        precoProdutoModel.setPrecoFinalProduto((double) calculatedPrice);
+
+        // Acessar a categoria do produto
+        CategoriaProduto categoriaProduto = produtoAtual.getCategoriaProduto();
+        produtoModel.setCategoriaProduto(categoriaProduto);
+
+        // Acessar o preço do produto
+        BeanUtils.copyProperties(precoProduto, precoProdutoModel);
+        produtoModel.setPrecoProduto(precoProdutoModel);
+
+        return produtoRepository.save(produtoModel);
     }
 
     public void removerProdutos(List<Map<String, Object>> produtos) {

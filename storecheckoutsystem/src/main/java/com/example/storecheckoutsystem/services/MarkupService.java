@@ -29,7 +29,7 @@ public class MarkupService {
         return markupRepository.findTopByOrderByIdMarkupDesc();
     }
 
-    public double calculateProductPrice(double productPrice, Markup markup) {
+    public double calculateProductPrice(Double productPrice, Markup markup) {
         return productPrice * markup.getResultadoMarkup();
     }
 
