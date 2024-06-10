@@ -1,5 +1,7 @@
 package com.example.storecheckoutsystem.controller;
 
+import com.example.storecheckoutsystem.model.CategoriaProduto;
+import com.example.storecheckoutsystem.model.PrecoProduto;
 import com.example.storecheckoutsystem.model.Produto;
 import com.example.storecheckoutsystem.services.ProdutoService;
 
@@ -69,5 +71,17 @@ public class ProdutoController {
     public ResponseEntity<Void> removerProdutos(@RequestBody List<Map<String, Object>> produtos) {
         produtoService.removerProdutos(produtos);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/precoProduto")
+    public ResponseEntity<PrecoProduto> buscarPrecoProdutoPorId(@PathVariable Integer id) {
+        PrecoProduto precoProduto = precoProdutoService.buscarPrecoProdutoPorId(id);
+        return ResponseEntity.ok(precoProduto);
+    }
+
+    @GetMapping("/{id}/categoria")
+    public ResponseEntity<CategoriaProduto> buscarCategoriaPorId(@PathVariable Integer id) {
+        CategoriaProduto categoria = categoriaService.buscarCategoriaPorId(id);
+        return ResponseEntity.ok(categoria);
     }
 }
