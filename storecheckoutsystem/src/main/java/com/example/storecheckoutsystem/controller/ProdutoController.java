@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/produto")
@@ -71,17 +72,5 @@ public class ProdutoController {
     public ResponseEntity<Void> removerProdutos(@RequestBody List<Map<String, Object>> produtos) {
         produtoService.removerProdutos(produtos);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{id}/precoProduto")
-    public ResponseEntity<PrecoProduto> buscarPrecoProdutoPorId(@PathVariable Integer id) {
-        PrecoProduto precoProduto = precoProdutoService.buscarPrecoProdutoPorId(id);
-        return ResponseEntity.ok(precoProduto);
-    }
-
-    @GetMapping("/{id}/categoria")
-    public ResponseEntity<CategoriaProduto> buscarCategoriaPorId(@PathVariable Integer id) {
-        CategoriaProduto categoria = categoriaService.buscarCategoriaPorId(id);
-        return ResponseEntity.ok(categoria);
     }
 }
