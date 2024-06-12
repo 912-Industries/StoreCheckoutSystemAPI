@@ -13,31 +13,26 @@ public class Produto {
     @JsonProperty("id_produto")
     private Integer idProduto;
 
-    @OneToOne
-    @JoinColumn(name = "id_precoProduto")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_precoProduto", nullable = false)
     @JsonProperty("id_precoProduto")
     private PrecoProduto precoProduto;
 
-    @OneToOne
-    @JoinColumn(name = "id_categoria")
-    @JsonProperty("id_categoria")
-    private CategoriaProduto categoriaProduto;
 
-    @Column(name = "nome_produto")
+    @Column(name = "nome_produto", length = 100, nullable = false)
     @JsonProperty("nome_produto")
     private String nomeProduto;
 
-    @Column(name = "descricao_produto")
+    @Column(name = "descricao_produto", length = 255, nullable = false)
     @JsonProperty("descricao_produto")
     private String descricaoProduto;
 
-    @Column(name = "quantidade_produto")
+    @Column(name = "quantidade_produto", nullable = false)
     @JsonProperty("quantidade_produto")
     private int quantidadeProduto;
 
     public Produto() {
         this.precoProduto = new PrecoProduto();
-        this.categoriaProduto = new CategoriaProduto();
     }
 
     public Integer getIdProduto() {
@@ -54,14 +49,6 @@ public class Produto {
 
     public void setPrecoProduto(PrecoProduto precoProduto) {
         this.precoProduto = precoProduto;
-    }
-
-    public CategoriaProduto getCategoriaProduto() {
-        return categoriaProduto;
-    }
-
-    public void setCategoriaProduto(CategoriaProduto categoriaProduto) {
-        this.categoriaProduto = categoriaProduto;
     }
 
     public String getNomeProduto() {

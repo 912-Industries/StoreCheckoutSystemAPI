@@ -18,15 +18,15 @@ public class Usuario {
   @JsonProperty("id_usuario")
   private int id_usuario;
 
-  @Column(name = "nome_usuario")
+  @Column(name = "nome_usuario",length = 100)
   @JsonProperty("nome_usuario")
   private String nomeUsuario;
 
-  @Column(name = "email_usuario")
+  @Column(name = "email_usuario", length = 20, unique = true)
   @JsonProperty("email_usuario")
   private String email_usuario;
 
-  @Column(name = "senha_usuario")
+  @Column(name = "senha_usuario",length = 20)
   @JsonProperty("senha_usuario")
   private String senha_usuario;
 

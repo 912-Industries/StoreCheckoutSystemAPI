@@ -1,6 +1,5 @@
 package com.example.storecheckoutsystem.services;
 
-import com.example.storecheckoutsystem.model.CategoriaProduto;
 import com.example.storecheckoutsystem.model.Markup;
 import com.example.storecheckoutsystem.model.PrecoProduto;
 import com.example.storecheckoutsystem.model.Produto;
@@ -9,6 +8,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,10 +37,6 @@ public class ProdutoService {
             Produto produtoModel = new Produto();
             BeanUtils.copyProperties(produto, produtoModel);
 
-            // Acessar a categoria do produto
-            CategoriaProduto categoriaProduto = produto.getCategoriaProduto();
-            produtoModel.setCategoriaProduto(categoriaProduto);
-
             // Acessar o preço do produto
             PrecoProduto precoProduto = produto.getPrecoProduto();
             PrecoProduto precoProdutoModel = new PrecoProduto();
@@ -55,24 +52,16 @@ public class ProdutoService {
     public Produto cadastroProduto(Produto produto) {
         Markup lastMarkup = markupService.getLastMarkup();
         PrecoProduto precoProduto = produto.getPrecoProduto();
-        if (precoProduto.getPrecoCustoProduto()!= null) {
+
+        if (precoProduto.getPrecoCustoProduto() != null) {
             float calculatedPrice = (float) markupService.calculateProductPrice(precoProduto.getPrecoCustoProduto(), lastMarkup);
-            precoProduto.setPrecoFinalProduto((double) calculatedPrice);
-        } else {
-            // handle the case where precoCustoProduto is null
-            precoProduto.setPrecoFinalProduto(0.0); // or some other default value
+            BigDecimal finalPrice = new BigDecimal(calculatedPrice).setScale(2, RoundingMode.HALF_UP);
+            precoProduto.setPrecoFinalProduto(finalPrice.doubleValue());
         }
 
         Produto produtoModel = new Produto();
         BeanUtils.copyProperties(produto, produtoModel);
-
-        CategoriaProduto categoriaProduto = produto.getCategoriaProduto();
-        produtoModel.setCategoriaProduto(categoriaProduto);
-
-        PrecoProduto precoProdutoModel = new PrecoProduto();
-        BeanUtils.copyProperties(precoProduto, precoProdutoModel);
-        produtoModel.setPrecoProduto(precoProdutoModel);
-
+        produtoModel.setPrecoProduto(precoProduto);
         return produtoRepository.save(produtoModel);
     }
 
@@ -90,24 +79,24 @@ public class ProdutoService {
         // Atualizar campos do produto
         produtoModel.setQuantidadeProduto(produto.getQuantidadeProduto());
 
+        // Obter o preço de custo original
+        Double precoCustoOriginal = produto.getPrecoProduto().getPrecoCustoProduto();
+
         // Atualizar preço final do produto
-        Double precoCustoProduto = precoProduto.getPrecoCustoProduto();
         Markup lastMarkup = markupService.getLastMarkup();
-        float calculatedPrice = (float) markupService.calculateProductPrice(precoCustoProduto, lastMarkup);
-        precoProduto.setPrecoFinalProduto((double) calculatedPrice);
+        float calculatedPrice = (float) markupService.calculateProductPrice(precoCustoOriginal, lastMarkup);
+        BigDecimal finalPrice = new BigDecimal(calculatedPrice).setScale(2, RoundingMode.HALF_UP);
+        precoProduto.setPrecoFinalProduto(finalPrice.doubleValue());
 
-        // Atualizar categoria do produto
-        CategoriaProduto categoriaProduto = produtoAtual.getCategoriaProduto();
-        produtoModel.setCategoriaProduto(categoriaProduto);
+        // Atualizar preço de custo do produto (use original value)
+        precoProduto.setPrecoCustoProduto(precoCustoOriginal);
 
-        // Atualizar preço do produto
-        precoProduto = produtoAtual.getPrecoProduto();
-        PrecoProduto precoProdutoModel = new PrecoProduto();
-        BeanUtils.copyProperties(precoProduto, precoProdutoModel);
-        produtoModel.setPrecoProduto(precoProdutoModel);
+        // Atualizar preço do produto no modelo
+        produtoModel.setPrecoProduto(precoProduto);
 
         return produtoRepository.save(produtoModel);
     }
+
 
     public void excluirProduto(int id) {
         Produto produto = produtoRepository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
@@ -134,22 +123,27 @@ public class ProdutoService {
         Produto produtoModel = new Produto();
         PrecoProduto precoProduto = produtoAtual.getPrecoProduto();
         PrecoProduto precoProdutoModel = new PrecoProduto();
+
+        // Update the precoCusto_precoProduto field in the produtoAtual object
+        precoProduto.setPrecoCustoProduto(produto.getPrecoProduto().getPrecoCustoProduto());
+
+        // Copy the properties from produtoAtual to produtoModel
         BeanUtils.copyProperties(produtoAtual, produtoModel);
 
-        precoProduto.setPrecoCustoProduto(precoProduto.getPrecoCustoProduto());
+        // Update the quantidadeProduto field in the produtoModel object
         produtoModel.setQuantidadeProduto(produtoAtual.getQuantidadeProduto() + produto.getQuantidadeProduto());
 
+        // Calculate the precoFinalProduto field
         Markup lastMarkup = markupService.getLastMarkup();
         Double productPrice = precoProduto.getPrecoCustoProduto();
         float calculatedPrice = (float) markupService.calculateProductPrice(productPrice, lastMarkup);
-        precoProdutoModel.setPrecoFinalProduto((double) calculatedPrice);
+        BigDecimal finalPrice = new BigDecimal(calculatedPrice).setScale(2, RoundingMode.HALF_UP);
+        precoProdutoModel.setPrecoFinalProduto(finalPrice.doubleValue());
 
-        // Acessar a categoria do produto
-        CategoriaProduto categoriaProduto = produtoAtual.getCategoriaProduto();
-        produtoModel.setCategoriaProduto(categoriaProduto);
+        // Copy the updated precoCustoProduto value from produtoAtual to precoProdutoModel
+        precoProdutoModel.setPrecoCustoProduto(produtoAtual.getPrecoProduto().getPrecoCustoProduto());
 
-        // Acessar o preço do produto
-        BeanUtils.copyProperties(precoProduto, precoProdutoModel);
+        // Copy the updated precoProdutoModel to the produtoModel object
         produtoModel.setPrecoProduto(precoProdutoModel);
 
         return produtoRepository.save(produtoModel);

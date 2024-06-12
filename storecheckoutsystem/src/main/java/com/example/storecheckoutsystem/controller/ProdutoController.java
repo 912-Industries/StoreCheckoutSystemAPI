@@ -1,7 +1,5 @@
 package com.example.storecheckoutsystem.controller;
 
-import com.example.storecheckoutsystem.model.CategoriaProduto;
-import com.example.storecheckoutsystem.model.PrecoProduto;
 import com.example.storecheckoutsystem.model.Produto;
 import com.example.storecheckoutsystem.services.ProdutoService;
 
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/produto")
