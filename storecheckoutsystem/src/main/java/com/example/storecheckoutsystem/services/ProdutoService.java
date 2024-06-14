@@ -97,8 +97,7 @@ public class ProdutoService {
             Produto produtoEntity = produtoRepository.findById(idProduto).orElseThrow();
 
             int novaQuantidade = produtoEntity.getQuantidadeProduto() - quantidade;
-            if (novaQuantidade <= 0) {
-                novaQuantidade = 0;
+            if (novaQuantidade < 0) {
                 throw new IllegalStateException("Quantidade do produto não pode ser reduzida abaixo de zero");
             }
 
