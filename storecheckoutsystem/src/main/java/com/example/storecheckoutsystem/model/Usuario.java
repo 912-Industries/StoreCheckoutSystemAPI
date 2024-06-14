@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "Usuario")
 public class Usuario {
 
   @Id
@@ -18,20 +18,19 @@ public class Usuario {
   @JsonProperty("id_usuario")
   private int id_usuario;
 
-  @Column(name = "nome_usuario")
+  @Column(name = "nome_usuario",length = 100)
   @JsonProperty("nome_usuario")
   private String nomeUsuario;
 
-  @Column(name = "email_usuario")
+  @Column(name = "email_usuario", length = 20, unique = true)
   @JsonProperty("email_usuario")
   private String email_usuario;
 
-  @Column(name = "senha_usuario")
+  @Column(name = "senha_usuario",length = 20)
   @JsonProperty("senha_usuario")
   private String senha_usuario;
 
-  @Column(name = "nivel_permissao_usuario")
-  @JsonProperty("nivel_permissao_usuario")
+
 
   private Integer nivel_permissao_usuario;
 
@@ -63,11 +62,5 @@ public class Usuario {
     this.senha_usuario = senha_usuario;
   }
 
-  public Integer getNivel_permissao_usuario() {
-    return nivel_permissao_usuario;
-  }
 
-  public void setNivel_permissao_usuario(Integer nivel_permissao_usuario) {
-    this.nivel_permissao_usuario = nivel_permissao_usuario;
-  }
 }

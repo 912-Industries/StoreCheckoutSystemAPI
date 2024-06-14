@@ -60,7 +60,6 @@ public class UsuarioService {
         Usuario usuarioAtual = optionalUsuario.get();
         usuarioAtual.setNomeUsuario(usuario.getNome_usuario());
         usuarioAtual.setEmail_usuario(usuario.getEmail_usuario());
-        usuarioAtual.setNivel_permissao_usuario(usuario.getNivel_permissao_usuario());
         usuarioAtual.setSenha_usuario(usuario.getSenha_usuario());
         return usuarioRepository.save(usuarioAtual);
     }

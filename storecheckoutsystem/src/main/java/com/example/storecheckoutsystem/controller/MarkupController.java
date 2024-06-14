@@ -1,5 +1,6 @@
 package com.example.storecheckoutsystem.controller;
 
+import com.example.storecheckoutsystem.model.PrecoProduto;
 import com.example.storecheckoutsystem.services.MarkupService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +36,10 @@ public class MarkupController {
         return new ResponseEntity<>(lastMarkup, HttpStatus.OK);
     }
 
-    public ResponseEntity<Double> calculateProductPrice(double productPrice, ResponseEntity<Markup> lastMarkup2) {
+    public ResponseEntity<Double> calculateProductPrice(PrecoProduto productPrice, ResponseEntity<Markup> lastMarkup2) {
         Markup lastMarkup = markupService.getLastMarkup();
-        double totalPrice = markupService.calculateProductPrice(productPrice, lastMarkup);
+        double productPriceValue = productPrice.getPrecoCustoProduto();
+        double totalPrice = markupService.calculateProductPrice(productPriceValue, lastMarkup);
         return new ResponseEntity<>(totalPrice, HttpStatus.OK);
     }
 }
