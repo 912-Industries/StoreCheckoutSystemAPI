@@ -26,7 +26,7 @@ public class Usuario {
   @JsonProperty("email_usuario")
   private String email_usuario;
 
-  @Column(name = "senha_usuario",length = 20)
+  @Column(name = "senha_usuario", length = 255)
   @JsonProperty("senha_usuario")
   private String senha_usuario;
 

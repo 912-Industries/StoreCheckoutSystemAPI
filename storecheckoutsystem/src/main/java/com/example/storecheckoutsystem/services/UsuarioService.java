@@ -3,6 +3,7 @@ package com.example.storecheckoutsystem.services;
 import com.example.storecheckoutsystem.model.Usuario;
 import com.example.storecheckoutsystem.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,9 +23,14 @@ public class UsuarioService {
     }
 
     public Usuario cadastroUsuario(Usuario usuario) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(usuario.getSenha_usuario());
+
         usuario.setNomeUsuario(usuario.getNome_usuario());
         usuario.setEmail_usuario(usuario.getEmail_usuario());
-        usuario.setSenha_usuario(usuario.getSenha_usuario());
+        usuario.setSenha_usuario(hashedPassword); // Atualize a senha criptografada
+
+        System.out.println(hashedPassword);
         return usuarioRepository.save(usuario);
     }
 
@@ -33,14 +39,12 @@ public class UsuarioService {
         return optionalUsuario.orElse(null);
     }
 
-    public Usuario salvarUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
-    }
-
     public String usuarioLogin(Usuario login) {
         Optional<Usuario> usuario = usuarioRepository.findByNomeUsuario(login.getNome_usuario());
+
         if (usuario.isPresent()) {
-            if (login.getSenha_usuario().equals(usuario.get().getSenha_usuario())) {
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            if (passwordEncoder.matches(login.getSenha_usuario(), usuario.get().getSenha_usuario())) {
                 return "Login feito com sucesso";
             } else {
                 return "Senha Inválida";
@@ -66,4 +70,5 @@ public class UsuarioService {
     public void excluirProduto(int id) {
         usuarioRepository.deleteById(id);
     }
+
 }

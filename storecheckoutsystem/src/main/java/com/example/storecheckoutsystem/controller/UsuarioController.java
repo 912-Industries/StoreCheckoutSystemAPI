@@ -55,7 +55,7 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<Usuario> salvarUsuario(@Validated @RequestBody Usuario usuario) {
-        Usuario novoUsuario = usuarioService.salvarUsuario(usuario);
+        Usuario novoUsuario = usuarioService.cadastroUsuario(usuario);
         return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
     }
 
